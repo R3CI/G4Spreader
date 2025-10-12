@@ -1,6 +1,6 @@
 from src import *
 from src.utils.files import files
-from src.utils.logging import logger
+from src.cli import dashboard, logger
 tokendata = {}
 
 
@@ -97,7 +97,7 @@ class curlwrapper:
 # removed the good stuff so the skids dont skid lol
 class apibypassing_:
     def __init__(self):
-        logger.info('Initializing API bypassing', 'API')
+        logger.info('Initializing API bypassing')
         self.cffiversion = 'chrome136'
 
         self.headers = {
@@ -128,8 +128,6 @@ apibypassing = apibypassing_()
 class client:
     def __init__(self, token=None, referrer='https://discord.com/channels/@me'):
         self.token = token
-        self.solvedcaptcha = False
-        self.failedsolve = False
         self.proxy = None
         self.fullproxy = None
         self.maskedtoken = token[:30] if token else None
@@ -142,10 +140,7 @@ class client:
         if files.getproxies():
             self.setproxy()
 
-        self.xsuper = copy.deepcopy(apibypassing.xsuper)
         self.headers = copy.deepcopy(apibypassing.headers)
-        self.wshellopayload = copy.deepcopy(apibypassing.wshellopayload)
-        self.wsheaders = copy.deepcopy(apibypassing.wsheaders)
         self.settoken(token)
         self.addxsup('eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6InBsLVBMIiwiaGFzX2NsaWVudF9tb2RzIjpmYWxzZSwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzE0MS4wLjAuMCBTYWZhcmkvNTM3LjM2IiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTQxLjAuMC4wIiwib3NfdmVyc2lvbiI6IjEwIiwicmVmZXJyZXIiOiJodHRwczovL3d3dy5wcml2YWN5d2FsbC5vcmcvIiwicmVmZXJyaW5nX2RvbWFpbiI6Ind3dy5wcml2YWN5d2FsbC5vcmciLCJyZWZlcnJlcl9jdXJyZW50IjoiIiwicmVmZXJyaW5nX2RvbWFpbl9jdXJyZW50IjoiIiwicmVsZWFzZV9jaGFubmVsIjoic3RhYmxlIiwiY2xpZW50X2J1aWxkX251bWJlciI6NDU3MTc0LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsLCJjbGllbnRfbGF1bmNoX2lkIjoiYzY4ZmMyODYtYTdjNC00YTFhLWIxOWMtNmVlNzI3ODY0NDkwIiwibGF1bmNoX3NpZ25hdHVyZSI6IjgyNDMwMTBiLTcwYTktNDE1MC05Yjc2LTdlYjNhOGE1NjVmMiIsImNsaWVudF9oZWFydGJlYXRfc2Vzc2lvbl9pZCI6IjhjYTk2N2U2LTFjNTQtNDMwZi04YzE0LTA2MjU5YTRkYTJiOSIsImNsaWVudF9hcHBfc3RhdGUiOiJmb2N1c2VkIn0=')
 
@@ -153,15 +148,14 @@ class client:
         return curlwrapper.Session(impersonate=apibypassing.cffiversion)
 
     def refreshcookies(self):
-        self.cookiejar, self.cookiestr = apibypassing.getcookie(self.headers, self.sess)
+        self.cookiejar, self.cookiestr = apibypassing.getcookie(self.headers)
         self.updatecookies(self.cookiejar, self.cookiestr)
         tokendata[self.token]['cookiejar'] = self.cookiejar
         tokendata[self.token]['cookiestr'] = self.cookiestr
 
     def updatecookies(self, cookiejar, cookiestr):
         if not self.cookiejar:
-            logger.debug(f'{self.maskedtoken} » Getting cookies')
-            self.cookiejar, self.cookiestr = apibypassing.getcookie(self.headers, self.sess)
+            self.cookiejar, self.cookiestr = apibypassing.getcookie(self.headers)
             
         self.headers['cookie'] = cookiestr
         self.sess.cookies.update(cookiejar)
@@ -198,7 +192,7 @@ class client:
         self.headers['x-super-properties'] = xsuper
 
 # removed the good stuff so the skids dont skid lol
-logger.info('Fetching discord related stuff', 'API')
+logger.info('Fetching discord related stuff')
 for token in files.gettokens():
     tokendata[token] = {
         'cookiejar': None,

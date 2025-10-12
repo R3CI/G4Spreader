@@ -1,48 +1,9 @@
 from src import *
-from src.utils.logging import logger
+from src.cli import dashboard, logger
 
 class files:
-    def check():
-        filestomake = [
-            'results'
-        ]
-
-        folderstomake = [
-            'tokens.txt',
-            'proxies.txt',
-            'message.txt'
-        ]
-
-        for path in filestomake:
-            try:
-                if not os.path.exists(path):
-                    os.makedirs(path)
-
-            except PermissionError as e:
-                logger.error(f'Permission denied creating files/directories, please move G4SpreadER to a different place desktop/own folder best » {e}')
-                input('')
-
-            except Exception as e:
-                logger.error(f'Error creating files » {e}')
-                input('')
-        
-        for path in folderstomake:
-            try:
-                if not os.path.exists(path):
-                    with open(path, 'w', encoding='utf-8', errors='ignore') as f:
-                        f.write('')
-    
-            except PermissionError as e:
-                logger.error(f'Permission denied creating files/directories, please move G4SpreadER to a different place desktop/own folder best » {e}')
-                input('')
-
-            except Exception as e:
-                logger.error(f'Error creating files » {e}')
-                input('')
-
     def gettokens():
         tokens = []
-
         try:
             with open('tokens.txt', 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.read().splitlines()
@@ -97,24 +58,3 @@ class files:
             input('')
                
         return proxies
-
-    def choosefile():
-        root = Tk()
-        root.withdraw()
-        root.attributes('-topmost', True)
-        path = filedialog.askopenfilename(
-            title='Select a file',
-            filetypes=[
-                ('All files', '*.*'),
-            ]
-        )
-        root.destroy()
-        return path
-
-    def choosefolder():
-        root = Tk()
-        root.withdraw()
-        root.attributes('-topmost', True)
-        path = filedialog.askdirectory(title='Select a folder')
-        root.destroy()
-        return path
