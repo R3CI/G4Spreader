@@ -9,7 +9,8 @@ class files:
 
         folderstomake = [
             'tokens.txt',
-            'proxies.txt'
+            'proxies.txt',
+            'message.txt'
         ]
 
         for path in filestomake:
@@ -43,7 +44,7 @@ class files:
         tokens = []
 
         try:
-            with open('okens.txt', 'r', encoding='utf-8', errors='ignore') as f:
+            with open('tokens.txt', 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.read().splitlines()
                 for line in lines:
                     if not line.strip():
@@ -74,7 +75,7 @@ class files:
     def getproxies():
         proxies = []
         try:
-            with open('data/proxies.txt', 'r', encoding='utf-8', errors='ignore') as f:
+            with open('proxies.txt', 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.read().splitlines()
                 for line in lines:
                     try:

@@ -8,6 +8,7 @@ from tkinter import Tk, filedialog, messagebox
 from curl_cffi import exceptions as cfex
 import re
 import traceback
+import requests
 import threading as threadinglib
 import webbrowser
 import concurrent.futures
