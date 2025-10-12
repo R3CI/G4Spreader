@@ -6,6 +6,9 @@ from src.diccccord import disccccord
 from src.utils.files import files
 from src.utils.stats import stats
 
+
+webbrowser.open('https://g4tools.cc')
+webbrowser.open('https://discord.gg/spamming')
 os.system('title G4Spreader - launching...')
 print('Please give it a second to start up it might be blank for 5-15 seconds')
 time.sleep(3)
