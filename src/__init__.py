@@ -1,38 +1,16 @@
-import sys, os; sys.dont_write_bytecode = True; os.environ['PYTHONDONTWRITEBYTECODE'] = '1'; os.system('cls'); os.system('title G4Raid - launching...')
+import sys, os; sys.dont_write_bytecode = True; os.environ['PYTHONDONTWRITEBYTECODE'] = '1'; os.system('cls'); os.system('title G4Spreader - launching...')
 import time
 import copy
 import uuid
-import httpx
 import json
-from requests.exceptions import SSLError
-import socket
-import base64
-import string
-import random
-import pyperclip
-import OpenSSL
-import difflib
-from queue import Queue
 import subprocess
-import getmac
-import winreg
-import psutil
 from tkinter import Tk, filedialog, messagebox
 from curl_cffi import exceptions as cfex
-import secrets
-import ctypes
-import hashlib
 import re
-import platform
 import traceback
-import shutil
 import threading as threadinglib
 import webbrowser
-import signal
-import requests
-import websocket
 import concurrent.futures
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import curl_cffi as curlcffi_
 from discordrp import Presence
 from curl_cffi import requests as curlcffi
@@ -46,15 +24,8 @@ from requests.cookies import RequestsCookieJar
 import base64
 import random
 import string
-import shutil
 import json
-from collections import defaultdict
-from cryptography.fernet import Fernet
-from typing import Any, Dict, Union, List
 import urllib3
-from base64 import b64encode, b64decode
-from hashlib import scrypt
-from secrets import token_bytes
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def rgb(r, g, b):
