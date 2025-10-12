@@ -39,6 +39,7 @@ except:
         'requests',
         'discord-rpc',
         'textual',
+        'datetime',
         'rich',
         'urllib3'
     ]
