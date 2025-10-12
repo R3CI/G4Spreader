@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  
+  A high-speed PoC tool that uses a Discord token to automatically sends a message to all open DMs and every channel in your joined servers, demonstrating how easily bad actors can mass-distribute malware or ads. Supports proxies, mutliple tokens and is fully undetected.
 </p>
   
 <p align="center">
