@@ -1,11 +1,10 @@
-from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Vertical
-from textual.widgets import Static, Log, ProgressBar
-from datetime import datetime as dt
+from src import *
 
 class Logger:
     def __init__(self):
         self.logwidget = None
+        open('debug.txt', 'w').close()
+        sys.excepthook = self.handle_exception
     
     def timestamp(self):
         return dt.now().strftime('%H:%M:%S')
@@ -19,7 +18,18 @@ class Logger:
             self.logwidget.write_line(logstr)
         else:
             print(logstr)
-    
+        
+        if DEBUG:
+            with open('debug.txt', 'a', encoding='utf-8') as f:
+                f.write(logstr + '\n')
+        
+    def handle_exception(self, exc_type, exc_value, exc_traceback):
+        if issubclass(exc_type, KeyboardInterrupt):
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+            return
+        err = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+        self.write(err, level_color='red', level_name='EXCEPTION')
+
     def info(self, text):
         self.write(text, level_color='blue', level_name='INFO')
     
@@ -48,7 +58,7 @@ class Logger:
         self.write(text, level_color='red', level_name='CAPTCHA')
     
     def debug(self, text):
-        pass
+        self.write(text, level_color='white', level_name='DEBUG')
 
 logger = Logger()
 
@@ -103,6 +113,8 @@ class dashboard(App):
         self.percent = 0
         self.configdata = {}
         self.threads = []
+        logger.logwidget = self.logwidget
+        logger.info('Dashboard started')
    
     def setstats(self, sentdms=None, sentchannels=None, totaltosend=None, percent=None):
         if sentdms is not None:

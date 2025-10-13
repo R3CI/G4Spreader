@@ -10,6 +10,7 @@ try:
     from tkinter import Tk, filedialog, messagebox
     from curl_cffi import exceptions as cfex
     import re
+    import multiprocessing
     import traceback
     import requests
     import threading as threadinglib
@@ -33,6 +34,8 @@ try:
     from textual.containers import Container, Horizontal, Vertical
     from textual.widgets import Static, Log, ProgressBar
     from rich.text import Text
+    import tkinter as tk
+    from tkinter import scrolledtext
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 except:
     packages = [
