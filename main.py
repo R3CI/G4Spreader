@@ -44,7 +44,7 @@ class Dashboard(dashboard):
                 nonlocal threadslist, availableids
                 with lock:
                     threadid = availableids.pop(0)
-                    threadslist.append({'id': threadid, 'token': token, 'progress': 0, 'success': 0, 'status': 'Idle'})
+                    threadslist.append({'id': threadid, 'token': token})
                     self.setthreads(list(threadslist))
 
                 discord = disccccord(token, config, stats, self)

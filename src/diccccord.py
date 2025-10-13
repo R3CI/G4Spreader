@@ -206,7 +206,7 @@ class disccccord:
             else: 
                 self.stats.totaltosend += len(channels)
                 opendmids.extend(channels)
-                self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, percent=self.stats.progress())
+                self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
         
         if self.servers:
             servers,end = self.getservers()
@@ -220,7 +220,7 @@ class disccccord:
                 else:
                     self.stats.totaltosend += len(channels)
                     serverchannelids.extend(channels)
-                    self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, percent=self.stats.progress())
+                    self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
         
         for dm in opendmids:
             end = self.send(dm)
@@ -229,7 +229,7 @@ class disccccord:
             else:
                 self.stats.toopendms += 1
                 self.stats.totalsent += 1
-                self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, percent=self.stats.progress())
+                self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend ,percent=self.stats.progress())
 
         for channel in serverchannelids:
             end = self.send(channel)
@@ -237,4 +237,4 @@ class disccccord:
                 return
             else:
                 self.stats.totalsent += 1
-                self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, percent=self.stats.progress())
+                self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())

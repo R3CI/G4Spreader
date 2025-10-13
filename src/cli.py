@@ -99,16 +99,19 @@ class dashboard(App):
         self.sentdms = 0
         self.sentchannels = 0
         self.total = 0
+        self.totaltosend = 0
         self.percent = 0
         self.configdata = {}
         self.threads = []
    
-    def setstats(self, sentdms=None, sentchannels=None, percent=None):
+    def setstats(self, sentdms=None, sentchannels=None, totaltosend=None, percent=None):
         if sentdms is not None:
             self.sentdms = sentdms
         if sentchannels is not None:
             self.sentchannels = sentchannels
         self.total = self.sentdms + self.sentchannels
+        if totaltosend is not None:
+            self.totaltosend = totaltosend
         if percent is not None:
             self.percent = max(0, min(100, percent))
         self.refreshstats()
@@ -127,7 +130,7 @@ class dashboard(App):
             self.logwidget.write_line(str(message))
    
     def refreshstats(self):
-        text = f'Sent to open DMS: {self.sentdms}\nSent to server channels: {self.sentchannels}\nTotal sent: {self.total}'
+        text = f'Sent to open DMS: {self.sentdms}\nSent to server channels: {self.sentchannels}\nTotal sent: {self.total}\n\nTotal channels found: {self.totaltosend}'
         self.statsdisplay.update(text)
    
     def refreshconfig(self):
@@ -145,9 +148,7 @@ class dashboard(App):
     def refreshthreads(self):
         lines = []
         for th in self.threads:
-            msg = th.get('status','')[:20].replace('\n', ' ')
-            progress = th.get('progress', 0)
-            lines.append(f'[dim]tid=[/dim]{th.get("id","")} [dim]token=[/dim]{th.get("token","")[:6]} [dim]sent=[/dim]{th.get("success",0)} [dim]progress=[/dim]{progress}% [dim]msg=[/dim]{msg}')
+            lines.append(f'[dim]tid=[/dim]{th.get("id","")} [dim]token=[/dim]{th.get("token","")[:6]}...')
         self.threadsdisplay.update('\n'.join(lines))
    
     def updateprogressbar(self):
