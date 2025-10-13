@@ -1,3 +1,5 @@
+DEBUG = False
+
 import sys, os; sys.dont_write_bytecode = True; os.environ['PYTHONDONTWRITEBYTECODE'] = '1'; os.system('cls'); os.system('title G4Spreader - launching...')
 try:
     import time
@@ -14,7 +16,6 @@ try:
     import webbrowser
     import concurrent.futures
     import curl_cffi as curlcffi_
-    from discordrp import Presence
     from curl_cffi import requests as curlcffi
     from datetime import datetime as dt, timedelta, timezone
     from urllib.parse import urlparse, quote
@@ -37,7 +38,6 @@ except:
     packages = [
         'curl-cffi',
         'requests',
-        'discord-rpc',
         'textual',
         'datetime',
         'rich',
