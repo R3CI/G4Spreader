@@ -340,7 +340,12 @@ class disccccord:
                 self.stats.totaltosend += len(channels)
                 opendmids.extend(channels)
                 self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
-        
+
+            for dm in opendmids:
+                end = self.send(dm)
+                if end:
+                    return
+
         if self.servers:
             servers, end = self.getservers()
             if end:
@@ -355,12 +360,7 @@ class disccccord:
                     serverchannelids.extend(channels)
                     self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
         
-        for dm in opendmids:
-            end = self.send(dm)
-            if end:
-                return
-
-        for channel in serverchannelids:
-            end = self.send(channel)
-            if end:
-                return
+            for channel in serverchannelids:
+                end = self.send(channel)
+                if end:
+                    return
