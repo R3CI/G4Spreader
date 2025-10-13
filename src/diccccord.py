@@ -179,17 +179,17 @@ class disccccord:
 
                 elif 'retry_after' in r.text:
                     ratelimit = r.json().get('retry_after', 1.5)
-                    logger.ratelimit(f'{self.client.maskedtoken} » {ratelimit}s')
+                    logger.ratelimit(f'{self.client.maskedtoken} » {ratelimit}s (yes i know huge ratelimits but still faster than other methods)')
                     time.sleep(float(ratelimit))
                     continue
 
                 elif 'Try again later' in r.text:
-                    logger.ratelimit(f'{self.client.maskedtoken} » 5s')
+                    logger.ratelimit(f'{self.client.maskedtoken} » 5s (yes i know huge ratelimits but still faster than other methods)')
                     time.sleep(5)
                     continue
 
                 elif 'Cloudflare' in r.text:
-                    logger.cloudflare(f'{self.client.maskedtoken} » 10s')
+                    logger.cloudflare(f'{self.client.maskedtoken} » 10s (yes i know huge ratelimits but still faster than other methods)')
                     time.sleep(10)
                     continue
 
@@ -222,9 +222,9 @@ class disccccord:
                 return [], False
             
 
-            #memberdata, end = self.getmemberdata(serverid)
-            #if end:
-            #    return [], False
+            memberdata, end = self.getmemberdata(serverid)
+            if end:
+                return [], False
             
             while True:
                 r = self.client.sess.get(
@@ -235,8 +235,8 @@ class disccccord:
                 if r.status_code == 200:
                     for channel in r.json():
                         if channel['type'] == 0:
-                            #if self.hassendpermission(channel, serverid, memberdata):
-                            channels.append(channel['id'])
+                            if self.hassendpermission(channel, serverid, memberdata):
+                                channels.append(channel['id'])
 
                     logger.success(f'{self.client.maskedtoken} » Got channels for {serverid} ({len(channels)})')
                     return channels, False
