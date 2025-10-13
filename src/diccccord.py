@@ -49,14 +49,19 @@ class disccccord:
                 elif 'You need to verify' in r.text:
                     logger.locked(f'{self.client.maskedtoken} Locked/Flagged')
                     return [], True
+                
+                elif '401' in r.text:
+                    logger.locked(f'{self.client.maskedtoken} Dead token')
+                    return True
+
 
                 else:
                     logger.error(f'{self.client.maskedtoken} » {r.text}')
-                    return [], True
+                    return [], False
 
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
-            return [], True
+            return [], False
 
     def getservers(self):
         servers = []
@@ -95,13 +100,18 @@ class disccccord:
                     logger.locked(f'{self.client.maskedtoken} Locked/Flagged')
                     return [], True
 
+                elif '401' in r.text:
+                    logger.locked(f'{self.client.maskedtoken} Dead token')
+                    return False
+
+
                 else:
                     logger.error(f'{self.client.maskedtoken} » {r.text}')
-                    return [], True
+                    return [], False
 
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
-            return [], True
+            return [], False
         
     def getchannels(self, serverid):
         channels = []
@@ -140,13 +150,17 @@ class disccccord:
                     logger.locked(f'{self.client.maskedtoken} Locked/Flagged')
                     return [], True
 
+                elif '401' in r.text:
+                    logger.locked(f'{self.client.maskedtoken} Dead token')
+                    return True
+
                 else:
                     logger.error(f'{self.client.maskedtoken} » {r.text}')
-                    return [], True
+                    return [], False
 
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
-            return [], True
+            return [], False
         
     def send(self, channelid):
         try:
@@ -185,12 +199,14 @@ class disccccord:
             elif 'You need to verify' in r.text:
                 logger.locked(f'{self.client.maskedtoken} Locked/Flagged')
                 return True
+            
+            elif '401' in r.text:
+                logger.locked(f'{self.client.maskedtoken} Dead token')
+                return True
 
             else:
                 logger.error(f'{self.client.maskedtoken} » {r.text}')
-                if '50001' in r.text or '340013' in r.text:
-                    return False
-                return True
+                return False
 
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')

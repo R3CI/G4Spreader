@@ -68,11 +68,15 @@ class sessionwrapper:
         return kwargs
    
     def request(self, method, url, **kwargs):
-        headers = dict(kwargs.get('headers', {})) if kwargs.get('headers') else {}
-        kwargs['headers'] = headers
-        kwargs = self.adddata(kwargs)
-        r = self.session.request(method, url, **kwargs)
-        return responsewrapper(r)
+        try:
+            headers = dict(kwargs.get('headers', {})) if kwargs.get('headers') else {}
+            kwargs['headers'] = headers
+            kwargs = self.adddata(kwargs)
+            r = self.session.request(method, url, **kwargs)
+            return responsewrapper(r)
+        except Exception as e:
+            logger.error(e)
+            return responsewrapper(error=e)
             
     def get(self, url, **kwargs):
         return self.request('GET', url, **kwargs)
