@@ -290,6 +290,9 @@ class disccccord:
 
                 if r.status_code == 200:
                     logger.success(f'{self.client.maskedtoken} » Sent')
+                    self.stats.toopendms += 1
+                    self.stats.totalsent += 1
+                    self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
                     return False
 
                 elif 'retry_after' in r.text:
@@ -309,6 +312,11 @@ class disccccord:
                     logger.locked(f'{self.client.maskedtoken} Locked/Flagged')
                     return True
                 
+                elif 'captcha_key' in r.text:
+                    logger.captcha(f'{self.client.maskedtoken} Human verification required')
+                    return True
+
+
                 elif '401' in r.text:
                     logger.locked(f'{self.client.maskedtoken} Dead token')
                     return True
@@ -351,16 +359,8 @@ class disccccord:
             end = self.send(dm)
             if end:
                 return
-            else:
-                self.stats.toopendms += 1
-                self.stats.totalsent += 1
-                self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
 
         for channel in serverchannelids:
             end = self.send(channel)
             if end:
                 return
-            else:
-                self.stats.toopenchannels += 1
-                self.stats.totalsent += 1
-                self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
