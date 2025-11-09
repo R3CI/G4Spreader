@@ -367,7 +367,7 @@ class disccccord:
                 
                 elif 'captcha_key' in r.text:
                     logger.captcha(f'{self.client.maskedtoken} Human verification required')
-                    return True
+                    return False
 
 
                 elif '401' in r.text:
