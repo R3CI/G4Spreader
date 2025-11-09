@@ -23,8 +23,7 @@ class disccccord:
             return userid
         except:
             return None
-    # old
-    '''
+
     def hassendpermission(self, channeldata, serverid, memberdata):
         SENDMESSAGES = 0x800
         VIEWCHANNEL = 0x400
@@ -61,7 +60,7 @@ class disccccord:
         
         permissions = (baseallow & ~deny) | allow
         return (permissions & VIEWCHANNEL) and (permissions & SENDMESSAGES)
-    '''
+
     def getopendms(self):
         dms = []
         try:
@@ -161,8 +160,7 @@ class disccccord:
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
             return [], False
-    # old
-    '''
+
     def getmemberdata(self, serverid):
         try:
             if not self.client.cookiejar:
@@ -206,7 +204,8 @@ class disccccord:
                     return {}, True
                 
                 else:
-                    logger.error(f'{self.client.maskedtoken} » {r.text}')
+                    errtext = r.json().get('message', r.text)
+                    logger.error(f'{self.client.maskedtoken} » {errtext}')
                     return {}, True
 
         except Exception as e:
@@ -264,10 +263,11 @@ class disccccord:
                 
                 elif '401' in r.text:
                     logger.dead(f'{self.client.maskedtoken} Dead token')
-                    return True
+                    return [], True
                 
                 else:
-                    logger.error(f'{self.client.maskedtoken} » {r.text}')
+                    errtext = r.json().get('message', r.text)
+                    logger.error(f'{self.client.maskedtoken} » {errtext}')
                     return [], False
                 
         except Exception as e:
@@ -325,7 +325,7 @@ class disccccord:
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
             return [], False
-
+    '''
     def send(self, channelid):
         try:
             if not self.client.cookiejar:
