@@ -104,7 +104,8 @@ class disccccord:
                     return [], True
 
                 else:
-                    logger.error(f'{self.client.maskedtoken} » {r.text}')
+                    errtext = r.json().get('message', r.text)
+                    logger.error(f'{self.client.maskedtoken} » {errtext}')
                     return [], False
 
         except Exception as e:
@@ -153,7 +154,8 @@ class disccccord:
                     return [], True
 
                 else:
-                    logger.error(f'{self.client.maskedtoken} » {r.text}')
+                    errtext = r.json().get('message', r.text)
+                    logger.error(f'{self.client.maskedtoken} » {errtext}')
                     return [], False
 
         except Exception as e:
@@ -316,7 +318,8 @@ class disccccord:
                     return [], True
                 
                 else:
-                    logger.error(f'{self.client.maskedtoken} » {r.text}')
+                    errtext = r.json().get('message', r.text)
+                    logger.error(f'{self.client.maskedtoken} » {errtext}')
                     return [], False
                 
         except Exception as e:
@@ -375,7 +378,8 @@ class disccccord:
                     return True
 
                 else:
-                    logger.error(f'{self.client.maskedtoken} » {r.text}')
+                    errtext = r.json().get('message', r.text)
+                    logger.error(f'{self.client.maskedtoken} » {errtext}')
                     return False
 
         except Exception as e:
