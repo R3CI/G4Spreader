@@ -10,7 +10,7 @@ webbrowser.open('https://g4tools.cc')
 webbrowser.open('https://discord.gg/spamming')
 os.system('title G4Spreader - launching...')
 print('Please give it a second to start up it might be blank for 5-15 seconds')
-time.sleep(3)
+#time.sleep(3)
 
 class Dashboard(dashboard):
     def on_mount(self):
@@ -25,6 +25,7 @@ class Dashboard(dashboard):
         config['message'] = open('message.txt', 'r').read().strip()
         with open('config.json', 'r') as f:
             configcontents = json.load(f)
+        config['threads'] = configcontents['threads']
         config['opendms'] = configcontents['opendms']
         config['servers'] = configcontents['servers']
         
@@ -36,7 +37,7 @@ class Dashboard(dashboard):
         def handler(tokens):
             threadslist = []
             lock = threadinglib.Lock()
-            maxthreads = 10
+            maxthreads = config['threads']
             availableids = list(range(1, maxthreads + 1))
 
             def run(token):

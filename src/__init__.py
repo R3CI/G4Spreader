@@ -31,7 +31,7 @@ try:
     import json
     import urllib3
     from textual.app import App, ComposeResult
-    from textual.containers import Container, Horizontal, Vertical
+    from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
     from textual.widgets import Static, Log, ProgressBar
     from rich.text import Text
     import tkinter as tk

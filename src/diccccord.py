@@ -23,7 +23,8 @@ class disccccord:
             return userid
         except:
             return None
-
+    # old
+    '''
     def hassendpermission(self, channeldata, serverid, memberdata):
         SENDMESSAGES = 0x800
         VIEWCHANNEL = 0x400
@@ -60,7 +61,7 @@ class disccccord:
         
         permissions = (baseallow & ~deny) | allow
         return (permissions & VIEWCHANNEL) and (permissions & SENDMESSAGES)
-
+    '''
     def getopendms(self):
         dms = []
         try:
@@ -99,8 +100,8 @@ class disccccord:
                     return [], True
                 
                 elif '401' in r.text:
-                    logger.locked(f'{self.client.maskedtoken} Dead token')
-                    return True
+                    logger.dead(f'{self.client.maskedtoken} Dead token')
+                    return [], True
 
                 else:
                     logger.error(f'{self.client.maskedtoken} » {r.text}')
@@ -148,8 +149,8 @@ class disccccord:
                     return [], True
 
                 elif '401' in r.text:
-                    logger.locked(f'{self.client.maskedtoken} Dead token')
-                    return True
+                    logger.dead(f'{self.client.maskedtoken} Dead token')
+                    return [], True
 
                 else:
                     logger.error(f'{self.client.maskedtoken} » {r.text}')
@@ -158,7 +159,8 @@ class disccccord:
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
             return [], False
-
+    # old
+    '''
     def getmemberdata(self, serverid):
         try:
             if not self.client.cookiejar:
@@ -198,7 +200,7 @@ class disccccord:
                     return {}, True
                 
                 elif '401' in r.text:
-                    logger.locked(f'{self.client.maskedtoken} Dead token')
+                    logger.dead(f'{self.client.maskedtoken} Dead token')
                     return {}, True
                 
                 else:
@@ -208,7 +210,7 @@ class disccccord:
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
             return {}, True
-        
+    
     def getchannels(self, serverid):
         channels = []
         try:
@@ -259,7 +261,7 @@ class disccccord:
                     return [], True
                 
                 elif '401' in r.text:
-                    logger.locked(f'{self.client.maskedtoken} Dead token')
+                    logger.dead(f'{self.client.maskedtoken} Dead token')
                     return True
                 
                 else:
@@ -269,7 +271,58 @@ class disccccord:
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
             return [], False
-        
+    '''
+    def getchannels(self, serverid):
+        channels = []
+        try:
+            if not self.client.cookiejar:
+                logger.info(f'{self.client.maskedtoken} » Getting cookies')
+                self.client.refreshcookies()
+                self.client.updatecookies(self.client.cookiejar, self.client.cookiestr)
+            
+            while True:
+                r = self.client.sess.get(
+                    f'https://discord.com/api/v9/guilds/{serverid}/channels',
+                    headers=self.client.headers
+                )
+                
+                if r.status_code == 200:
+                    for channel in r.json():
+                        if channel['type'] == 0:
+                            channels.append(channel['id'])
+
+                    logger.success(f'{self.client.maskedtoken} » Got channels for {serverid} ({len(channels)})')
+                    return channels, False
+                
+                elif 'retry_after' in r.text:
+                    ratelimit = r.json().get('retry_after', 1.5)
+                    logger.ratelimit(f'{self.client.maskedtoken} » {ratelimit}s')
+                    time.sleep(float(ratelimit))
+
+                elif 'Try again later' in r.text:
+                    logger.ratelimit(f'{self.client.maskedtoken} » 5s')
+                    time.sleep(5)
+
+                elif 'Cloudflare' in r.text:
+                    logger.cloudflare(f'{self.client.maskedtoken} » 10s')
+                    time.sleep(10)
+
+                elif 'You need to verify' in r.text:
+                    logger.locked(f'{self.client.maskedtoken} Locked/Flagged')
+                    return [], True
+                
+                elif '401' in r.text:
+                    logger.dead(f'{self.client.maskedtoken} Dead token')
+                    return [], True
+                
+                else:
+                    logger.error(f'{self.client.maskedtoken} » {r.text}')
+                    return [], False
+                
+        except Exception as e:
+            logger.error(f'{self.client.maskedtoken} » {e}')
+            return [], False
+
     def send(self, channelid):
         try:
             if not self.client.cookiejar:
@@ -318,7 +371,7 @@ class disccccord:
 
 
                 elif '401' in r.text:
-                    logger.locked(f'{self.client.maskedtoken} Dead token')
+                    logger.dead(f'{self.client.maskedtoken} Dead token')
                     return True
 
                 else:
@@ -327,11 +380,10 @@ class disccccord:
 
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
-            return True
+            return False
 
     def do(self):
         opendmids = []
-        serverchannelids = []
         if self.opendms:
             channels, end = self.getopendms()
             if end: 
@@ -346,6 +398,7 @@ class disccccord:
                 if end:
                     return
 
+        serverchannelids = []
         if self.servers:
             servers, end = self.getservers()
             if end:

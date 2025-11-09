@@ -3,7 +3,8 @@ from src import *
 class Logger:
     def __init__(self):
         self.logwidget = None
-        open('debug.txt', 'w').close()
+        if DEBUG:
+            open('debug.txt', 'w').close()
         sys.excepthook = self.handle_exception
     
     def timestamp(self):
@@ -45,6 +46,9 @@ class Logger:
     def locked(self, text):
         self.write(text, level_color='magenta', level_name='LOCKED')
     
+    def dead(self, text):
+        self.write(text, level_color='magenta', level_name='DEAD')
+
     def ratelimit(self, text):
         self.write(text, level_color='cyan', level_name='RATELIMIT')
     
@@ -96,7 +100,8 @@ class dashboard(App):
                     self.progress = ProgressBar(total=100, show_eta=False)
                     yield self.progress
                 with Vertical(id='threads'):
-                    self.threadsdisplay = Static('')
+                    self.threadscontent = Static('')
+                    self.threadsdisplay = ScrollableContainer(self.threadscontent)
                     yield self.threadsdisplay
                 with Vertical(id='config'):
                     self.configdisplay = Static('')
@@ -161,8 +166,8 @@ class dashboard(App):
         lines = []
         for th in self.threads:
             lines.append(f'[dim]tid=[/dim]{th.get("id","")} [dim]token=[/dim]{th.get("token","")[:6]}...')
-        self.threadsdisplay.update('\n'.join(lines))
-   
+        self.threadscontent.update('\n'.join(lines))
+
     def updateprogressbar(self):
         if self.percent <= 50:
             r = 255
