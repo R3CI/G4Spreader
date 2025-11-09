@@ -349,7 +349,7 @@ class disccccord:
                     self.stats.toopendms += 1
                     self.stats.totalsent += 1
                     self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
-                    return False
+                    return False, False
 
                 elif 'retry_after' in r.text:
                     ratelimit = r.json().get('retry_after', 1.5)
@@ -366,25 +366,28 @@ class disccccord:
 
                 elif 'You need to verify' in r.text:
                     logger.locked(f'{self.client.maskedtoken} Locked/Flagged')
-                    return True
+                    return True, True
                 
                 elif 'captcha_key' in r.text:
                     logger.captcha(f'{self.client.maskedtoken} Human verification required')
-                    return False
+                    return False, False
 
 
                 elif '401' in r.text:
                     logger.dead(f'{self.client.maskedtoken} Dead token')
-                    return True
+                    return True, True
 
                 else:
                     errtext = r.json().get('message', r.text)
+                    second = False
+                    if r.json().get('code', 0) == 50001:
+                        second = True
                     logger.error(f'{self.client.maskedtoken} » {errtext}')
-                    return False
+                    return False, second
 
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
-            return False
+            return False, True
 
     def do(self):
         opendmids = []
@@ -398,7 +401,7 @@ class disccccord:
                 self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
 
             for dm in opendmids:
-                end = self.send(dm)
+                end, skip = self.send(dm)
                 if end:
                     return
 
@@ -414,10 +417,12 @@ class disccccord:
                     return
                 else:
                     self.stats.totaltosend += len(channels)
-                    serverchannelids.extend(channels)
+                    serverchannelids = channels
                     self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
-        
-            for channel in serverchannelids:
-                end = self.send(channel)
-                if end:
-                    return
+                
+                for channel in serverchannelids:
+                    end, skip = self.send(channel)
+                    if skip:
+                        break
+                    if end:
+                        return
