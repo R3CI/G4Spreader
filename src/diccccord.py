@@ -346,9 +346,6 @@ class disccccord:
 
                 if r.status_code == 200:
                     logger.success(f'{self.client.maskedtoken} » Sent')
-                    self.stats.toopendms += 1
-                    self.stats.totalsent += 1
-                    self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
                     return False, False
 
                 elif 'retry_after' in r.text:
@@ -404,6 +401,10 @@ class disccccord:
                 end, skip = self.send(dm)
                 if end:
                     return
+                else:
+                    self.stats.toopendms += 1
+                    self.stats.totalsent += 1
+                    self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
 
         serverchannelids = []
         if self.servers:
@@ -424,5 +425,10 @@ class disccccord:
                     end, skip = self.send(channel)
                     if skip:
                         break
+
                     if end:
                         return
+                    else:
+                        self.stats.toopenchannels += 1
+                        self.stats.totalsent += 1
+                        self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
