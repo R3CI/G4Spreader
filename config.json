@@ -1,5 +1,7 @@
 {
-    "opendms": false,
+    "opendms": true,
     "servers": true,
+    "closedm": false,
+    "blockdms": false,
     "threads": 50
 }

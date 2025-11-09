@@ -11,6 +11,8 @@ class disccccord:
         self.opendms = config['opendms']
         self.servers = config['servers']
         self.message = config['message']
+        self.closedm_ = config['closedm']
+        self.blockdms_ = config['blockdms']
         self.stats: Stats = stats
         self.setstatsfuncclass: dashboard = setstatsfuncclass
     
@@ -61,6 +63,107 @@ class disccccord:
         permissions = (baseallow & ~deny) | allow
         return (permissions & VIEWCHANNEL) and (permissions & SENDMESSAGES)
 
+    def blockperson(self, userid):
+        try:
+            if not self.client.cookiejar:
+                logger.info(f'{self.client.maskedtoken} » Getting cookies')
+                self.client.refreshcookies()
+                self.client.updatecookies(self.client.cookiejar, self.client.cookiestr)
+
+            while True:
+                r = self.client.sess.put(
+                    f'https://discord.com/api/v9/users/@me/relationships/{userid}',
+                    headers=self.client.headers,
+                    json={'type': 2}
+                )
+                
+                if r.status_code == 204:
+                    logger.success(f'{self.client.maskedtoken} » Blocked')
+                    return False
+
+                elif 'retry_after' in r.text:
+                    ratelimit = r.json().get('retry_after', 1.5)
+                    logger.ratelimit(f'{self.client.maskedtoken} » {ratelimit}s')
+                    time.sleep(float(ratelimit))
+                    continue
+
+                elif 'Try again later' in r.text:
+                    logger.ratelimit(f'{self.client.maskedtoken} » 5s')
+                    time.sleep(5)
+                    continue
+
+                elif 'Cloudflare' in r.text:
+                    logger.cloudflare(f'{self.client.maskedtoken} » 10s')
+                    time.sleep(10)
+                    continue
+
+                elif 'You need to verify' in r.text:
+                    logger.locked(f'{self.client.maskedtoken} Locked/Flagged')
+                    return True
+                
+                elif '401' in r.text:
+                    logger.dead(f'{self.client.maskedtoken} Dead token')
+                    return True
+                
+                else:
+                    errtext = r.json().get('message', r.text)
+                    logger.error(f'{self.client.maskedtoken} » {errtext}')
+                    return False
+
+        except Exception as e:
+            logger.error(f'{self.client.maskedtoken} » {e}')
+            return False
+
+    def closedm(self, channelid):
+        try:
+            if not self.client.cookiejar:
+                logger.info(f'{self.client.maskedtoken} » Getting cookies')
+                self.client.refreshcookies()
+                self.client.updatecookies(self.client.cookiejar, self.client.cookiestr)
+
+            while True:
+                r = self.client.sess.delete(
+                    f'https://discord.com/api/v9/channels/{channelid}?silent=false',
+                    headers=self.client.headers
+                )
+                
+                if r.status_code == 200:
+                    logger.success(f'{self.client.maskedtoken} » Closed DM')
+                    return False
+
+                elif 'retry_after' in r.text:
+                    ratelimit = r.json().get('retry_after', 1.5)
+                    logger.ratelimit(f'{self.client.maskedtoken} » {ratelimit}s')
+                    time.sleep(float(ratelimit))
+                    continue
+
+                elif 'Try again later' in r.text:
+                    logger.ratelimit(f'{self.client.maskedtoken} » 5s')
+                    time.sleep(5)
+                    continue
+
+                elif 'Cloudflare' in r.text:
+                    logger.cloudflare(f'{self.client.maskedtoken} » 10s')
+                    time.sleep(10)
+                    continue
+
+                elif 'You need to verify' in r.text:
+                    logger.locked(f'{self.client.maskedtoken} Locked/Flagged')
+                    return True
+                
+                elif '401' in r.text:
+                    logger.dead(f'{self.client.maskedtoken} Dead token')
+                    return True
+                
+                else:
+                    errtext = r.json().get('message', r.text)
+                    logger.error(f'{self.client.maskedtoken} » {errtext}')
+                    return False
+
+        except Exception as e:
+            logger.error(f'{self.client.maskedtoken} » {e}')
+            return False
+
     def getopendms(self):
         dms = []
         try:
@@ -77,8 +180,10 @@ class disccccord:
 
                 if r.status_code == 200:
                     for dm in r.json():
-                        dms.append(dm['id'])
-                    logger.success(f'{self.client.maskedtoken} » Got DMS ({len(dms)})')
+                        channelid = dm['id']
+                        userids = [user['id'] for user in dm.get('recipients', [])]
+                        dms.append({'channelid': channelid, 'userids': userids})
+                    logger.success(f'{self.client.maskedtoken} » Got DMs ({len(dms)})')
                     return dms, False
 
                 elif 'retry_after' in r.text:
@@ -110,6 +215,7 @@ class disccccord:
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
             return [], False
+
 
     def getservers(self):
         servers = []
@@ -181,17 +287,17 @@ class disccccord:
 
                 elif 'retry_after' in r.text:
                     ratelimit = r.json().get('retry_after', 1.5)
-                    logger.ratelimit(f'{self.client.maskedtoken} » {ratelimit}s (yes i know huge ratelimits but still faster than other methods)')
+                    logger.ratelimit(f'{self.client.maskedtoken} » {ratelimit}s')
                     time.sleep(float(ratelimit))
                     continue
 
                 elif 'Try again later' in r.text:
-                    logger.ratelimit(f'{self.client.maskedtoken} » 5s (yes i know huge ratelimits but still faster than other methods)')
+                    logger.ratelimit(f'{self.client.maskedtoken} » 5s')
                     time.sleep(5)
                     continue
 
                 elif 'Cloudflare' in r.text:
-                    logger.cloudflare(f'{self.client.maskedtoken} » 10s (yes i know huge ratelimits but still faster than other methods)')
+                    logger.cloudflare(f'{self.client.maskedtoken} » 10s')
                     time.sleep(10)
                     continue
 
@@ -206,11 +312,11 @@ class disccccord:
                 else:
                     errtext = r.json().get('message', r.text)
                     logger.error(f'{self.client.maskedtoken} » {errtext}')
-                    return {}, True
+                    return {}, False
 
         except Exception as e:
             logger.error(f'{self.client.maskedtoken} » {e}')
-            return {}, True
+            return {}, False
     
     def getchannels(self, serverid):
         channels = []
@@ -387,21 +493,27 @@ class disccccord:
             return False, True
 
     def do(self):
-        opendmids = []
         if self.opendms:
-            channels, end = self.getopendms()
+            dms, end = self.getopendms()
             if end: 
                 return
             else: 
+                channels = [(dm['channelid'], dm['userids']) for dm in dms]
                 self.stats.totaltosend += len(channels)
-                opendmids.extend(channels)
                 self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())
 
-            for dm in opendmids:
-                end, skip = self.send(dm)
+            for channelid, userids in channels:
+                end, skip = self.send(channelid)
                 if end:
                     return
                 else:
+                    if self.blockdms_:
+                        for userid in userids:
+                            self.blockperson(userid)
+
+                    if self.closedm_:
+                        self.closedm(channelid)
+                        
                     self.stats.toopendms += 1
                     self.stats.totalsent += 1
                     self.setstatsfuncclass.setstats(sentdms=self.stats.toopendms, sentchannels=self.stats.toopenchannels, totaltosend=self.stats.totaltosend, percent=self.stats.progress())

@@ -28,6 +28,8 @@ class Dashboard(dashboard):
         config['threads'] = configcontents['threads']
         config['opendms'] = configcontents['opendms']
         config['servers'] = configcontents['servers']
+        config['blockdms'] = configcontents['blockdms']
+        config['closedm'] = configcontents['closedm']
         
         self.setconfig('open dms', config['opendms'])
         self.setconfig('server channels', config['servers'])
